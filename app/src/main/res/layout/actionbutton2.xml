@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_marginTop="300sp"
+    android:layout_width="match_parent"
+     android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/wish"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:text="wishList"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/textview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:text="This is a TextView"/>
+
+    <!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:id="@android:id/text1"-->
+        <!--android:text="              ADD WISH LIST DETAILS HERE"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="wrap_content" />-->
+
+
+</LinearLayout>

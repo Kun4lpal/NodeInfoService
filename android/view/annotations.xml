@@ -1,0 +1,5 @@
+<root>
+    <item name='android.view.WindowManager.LayoutParams TYPE_ACCESSIBILITY_OVERLAY'>
+        <annotation name='java.lang.Deprecated' />
+    </item>
+</root>

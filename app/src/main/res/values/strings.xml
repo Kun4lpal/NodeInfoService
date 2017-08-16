@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NodeInfoService</string>
+    <string name="add">Text has been added!</string>
+</resources>
