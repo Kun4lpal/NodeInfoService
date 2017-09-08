@@ -3,9 +3,9 @@ package com.example.kupal.nodeinfoservice;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.accessibilityservice.GestureDescription;
-import android.graphics.Path;
-import android.graphics.PixelFormat;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.RequiresApi;
@@ -22,21 +22,31 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+/**
+ * Created by kupaliwa on 8/27/17.
+ */
 
 public class DemoProxy extends AccessibilityService {
 
     //<-------------------------------  private Data Members  ---------------------------------------->
-
-    private FrameLayout overlay;
-    private FrameLayout overlay_wish;
+    
+    private FrameLayout overlay_permission;
     private TextToSpeech mTts;
     private int result;
     private WindowManager wm;
-    private boolean once;
-    private boolean once_wish;
+    private String appName = "";
+    private boolean once_permission;
+    private boolean once_button;
+    private ArrayList<BuildOverlay.annotationObject> listOfAnnotationObjects;
+    private ArrayList<AccessibilityNodeInfo> listOfNodes;
+    private AccessibilityNodeInfo current_overlay_previous_node;
+    private AccessibilityNodeInfo current_overlay_next_node;
+    private boolean annotation_overlay_exist = false;
+    private boolean accessibility_rating_overlay_exist = false;
 
 
     //<-------------------------------  onCreate method  ---------------------------------------->
@@ -44,19 +54,25 @@ public class DemoProxy extends AccessibilityService {
     @Override
     public void onCreate() {
         super.onCreate();
+        BuildOverlay.statusBarHeight = BuildOverlay.getStatusBarHeight(this);
+        BuildOverlay.window_manager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        once_button = false;
     }
 
     //<-------------------------------  override onServiceConnected  ---------------------------------------->
-
+    // instantiated AccessibilityInfo which is responsible for specificying the accessibility parameters
+    // instantiated the textToSpeech object
+    // Specified the event types that are allowed. Example: TYPE_WINDOW_CONTENT_CHANGED
+    // Specified feedbackType as spoken ( can be made generic instead)
+    // Specified notfication timeout as 100
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onServiceConnected() {
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
+
         info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED |
-                AccessibilityEvent.TYPE_VIEW_FOCUSED;
-
-
-        //<-------------------------------  create Text to Speech object  ----------------------------------->
+                AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+         | AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED;
 
         mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -68,115 +84,135 @@ public class DemoProxy extends AccessibilityService {
                 }
             }
         });
-
         info.feedbackType = AccessibilityServiceInfo.FEEDBACK_SPOKEN;
         info.notificationTimeout = 100;
         this.setServiceInfo(info);
     }
 
     //<-------------------------------  override onAccessibilityEvent  ---------------------------------------->
-
-
+    // Here we specifiy the package names of the android app we want to access
+    // dfs function is for building a log of all the nodes inside the current window
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 
-        //<-------------------------------  remove overlay after exiting whatsapp  ----------------------------->
-
+        //dfs(getRootInActiveWindow(),0);
+        //<-------------------------------  remove all overlay after exiting playstore  ----------------------------->
         if (!event.getPackageName().equals("com.android.vending")) {
-            if (overlay != null) {
-                wm.removeView(overlay);
-                overlay = null;
-                once = false;
+            if (overlay_permission != null) {
+                wm.removeView(overlay_permission);
+                overlay_permission = null;
+                once_permission = false;
             }
-            if (overlay_wish != null) {
-                wm.removeView(overlay_wish);
-                overlay_wish = null;
-                once_wish = false;
+
+            if(annotation_overlay_exist){
+                BuildOverlay.removeOverlays(this);
+                annotation_overlay_exist = false;
             }
             return;
         }
 
-        //<-------------------------------  test  ---------------------------------------->
+        //<------------------------------- this checks if we are system ui ---------------------------------------->
 
         if (event.getPackageName().equals("com.android.systemui")) {
             Toast.makeText(this, "testing UI", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        //<-------------------------------  add overlay to whatsapp ---------------------------------------->
+        //<-------------------------------  add overlay to app store ---------------------------------------->
+        // childcount is useful to get more information about the current window
 
         if (event.getPackageName().equals("com.android.vending")) {
             AccessibilityNodeInfo source = event.getSource();
             source.getChildCount();
-            Toast.makeText(this, "childCount: " + source.getChildCount(), Toast.LENGTH_SHORT).show();
-
+            //Toast.makeText(this, "childCount: " + source.getChildCount(), Toast.LENGTH_SHORT).show();
             dfs(getRootInActiveWindow(), 0);
-
-
-//            List<AccessibilityNodeInfo> findAccessibilityNodeInfosByViewId = null;
-//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-//                findAccessibilityNodeInfosByViewId = source.findAccessibilityNodeInfosByViewId("YOUR PACKAGE NAME:id/RESOURCE ID FROM WHERE YOU WANT DATA");
-//            }
-
             Log.i("Event", event.toString() + "");
             Log.i("Source", source.toString() + "");
 
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) {
-                if (event.getText().toString().contains("wishlist")) {
-                    if (!once_wish) {
-                        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-                        overlay_wish = new FrameLayout(this);
-                        LayoutParams lp_wish = new LayoutParams();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                            lp_wish.type = LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
-                        }
-                        lp_wish.format = PixelFormat.TRANSLUCENT;
-                        lp_wish.flags |= LayoutParams.FLAG_NOT_FOCUSABLE;
-                        lp_wish.width = LayoutParams.WRAP_CONTENT;
-                        lp_wish.height = LayoutParams.WRAP_CONTENT;
-                        lp_wish.gravity = Gravity.TOP;
-                        lp_wish.alpha = 100;
-                        LayoutInflater inflater = LayoutInflater.from(this);
-                        inflater.inflate(R.layout.actionbutton2, overlay_wish);
-                        configureWishButton();
-                        wm.addView(overlay_wish, lp_wish);
-                        once_wish = true;
-                    } else {
-                        wm.removeView(overlay_wish);
-                        overlay_wish = null;
-                        once_wish = false;
-                    }
-                }
-                speakToUser(event.getText().toString());
+
             } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
                 speakToUser("Scrolling");
+                // this is the button overlay with swipe/scroll and remove button
             } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-                if (!once) {
-                    wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-                    overlay = new FrameLayout(this);
-                    LayoutParams lp = new LayoutParams();
-                    lp.type = LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
-                    lp.format = PixelFormat.TRANSLUCENT;
-                    lp.flags |= LayoutParams.FLAG_NOT_FOCUSABLE;
-                    lp.width = LayoutParams.WRAP_CONTENT;
-                    lp.height = LayoutParams.WRAP_CONTENT;
-                    lp.gravity = Gravity.TOP;
-                    lp.alpha = 100;
-                    LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-                    inflater.inflate(R.layout.actionbutton, overlay);
-                    configureSwipeButton();
-                    //configureVolumeButton();
-                    configureScrollButton();
-                    configureRemoveButton();
-                    wm.addView(overlay, lp);
-                    once = true;
-                }
-
+                // here we can add an event or overlay
+            } else if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
             } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) {
                 Toast.makeText(this, "test1", Toast.LENGTH_SHORT).show();
-            } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
-                Toast.makeText(this, "test2", Toast.LENGTH_SHORT).show();
+            } else if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                final Context context = this;
+
+                // Results list is empty if the current window does not contain an install button
+                List<AccessibilityNodeInfo> results =
+                        getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.android.vending:id/buy_button");
+
+                // Here we are adding a button on top of the install button if we are on the correct window
+                if (results.size() > 0 && !once_button){
+                    AccessibilityNodeInfo install_button = results.get(0);
+                    listOfNodes = new ArrayList<AccessibilityNodeInfo>();
+                    BuildOverlay.refreshListOfNodes(listOfNodes, getRootInActiveWindow());
+                    Rect bounds = new Rect();
+                    install_button.getBoundsInScreen(bounds);
+                    bounds.top -= 150;
+                    bounds.bottom -= 150;
+                    listOfAnnotationObjects = new ArrayList<>();
+                    View.OnClickListener clickListener = new View.OnClickListener() {
+                        public void onClick(View v) {
+                            if (!once_permission) {
+                                wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+                                overlay_permission = new FrameLayout(context);
+                                LayoutParams lp_wish = new LayoutParams();
+                                overlay_permission.setBackgroundColor(Color.WHITE);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                                    lp_wish.type = LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
+                                }
+                                //lp_wish.format = PixelFormat.TRANSLUCENT;
+                                lp_wish.flags |= LayoutParams.FLAG_NOT_FOCUSABLE;
+                                lp_wish.width = LayoutParams.WRAP_CONTENT;
+                                lp_wish.height = LayoutParams.WRAP_CONTENT;
+                                lp_wish.gravity = Gravity.TOP;
+                                //lp_wish.alpha = 100;
+                                LayoutInflater inflater = LayoutInflater.from(context);
+                                inflater.inflate(R.layout.ui1, overlay_permission);
+                                configureWishButton();
+                                wm.addView(overlay_permission, lp_wish);
+                                once_permission = true;
+                            } else {
+                                wm.removeView(overlay_permission);
+                                overlay_permission = null;
+                                once_permission = false;
+                            }
+
+                            new android.os.Handler().postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            overlay_permission.performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                                        }
+                                    },
+                                    1000);
+                        }
+                    };
+                    listOfAnnotationObjects.add(new BuildOverlay.annotationObject(context, install_button, listOfNodes, bounds, "Permissions", clickListener));
+                    annotation_overlay_exist = true;
+                    once_button = true;
+                }
+
+                // Here we are removing the Permission button if we are not in the app window
+                if (results.size() == 0 && annotation_overlay_exist && once_button) {
+                    BuildOverlay.removeOverlays(this);
+                    annotation_overlay_exist = false;
+                    once_button = false;
+                }
+
+                // Here we are removing the UI which is displayed when i click the Permission button
+                if (overlay_permission != null && results.size() == 0) {
+                    wm.removeView(overlay_permission);
+                    overlay_permission = null;
+                    once_permission = false;
+                }
+
+                // a few test functions
             } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED) {
                 Toast.makeText(this, "test3", Toast.LENGTH_SHORT).show();
             } else if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_LONG_CLICKED) {
@@ -190,7 +226,7 @@ public class DemoProxy extends AccessibilityService {
     }
 
 
-    //<-------------------------------  helper function  ---------------------------------------->
+    //<-------------------------------  text to speech helper function  ---------------------------------------->
 
     private void speakToUser(String eventText) {
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -206,134 +242,46 @@ public class DemoProxy extends AccessibilityService {
     @Override
     public void onInterrupt() {
     }
-
-
-    //<-------------------------------  helper  ---------------------------------------->
-
-    private void configureRemoveButton() {
-        Button volumeUpButton = (Button) overlay.findViewById(R.id.Remove);
-        volumeUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                speakToUser("Remove Overlay");
-                if (overlay != null) {
-                    wm.removeView(overlay);
-                    overlay = null;
-                    once = false;
-                }
-
-                if (overlay_wish != null) {
-                    wm.removeView(overlay_wish);
-                    overlay_wish = null;
-                    once_wish = false;
-                }
-            }
-        });
-    }
-
-
-    //<-------------------------------  helper  ---------------------------------------->
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private AccessibilityNodeInfo findScrollableNode(AccessibilityNodeInfo root) {
-        Deque<AccessibilityNodeInfo> deque = new ArrayDeque<>();
-        deque.add(root);
-        while (!deque.isEmpty()) {
-            AccessibilityNodeInfo node = deque.removeFirst();
-            if (node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD)) {
-                return node;
-            }
-            for (int i = 0; i < node.getChildCount(); i++) {
-                deque.addLast(node.getChild(i));
-            }
-        }
-        return null;
-    }
-
-    //<-------------------------------  helper  ---------------------------------------->
-
-    private void configureScrollButton() {
-        Button scrollButton = (Button) overlay.findViewById(R.id.scroll);
-        scrollButton.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-                AccessibilityNodeInfo scrollable = findScrollableNode(getRootInActiveWindow());
-                if (scrollable != null) {
-                    speakToUser("Scrolling Right!");
-                    scrollable.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD.getId());
-                }
-            }
-        });
-    }
-
-    //<-------------------------------  helper  ---------------------------------------->
+    
+    //<------------------------------- configure wish button ---------------------------------------->
 
     private void configureWishButton() {
-        Button scrollButton = (Button) overlay_wish.findViewById(R.id.wish);
+        final Context context = this;
+        Button scrollButton = (Button) overlay_permission.findViewById(R.id.removeOv);
+        TextView appN = (TextView) overlay_permission.findViewById(R.id.appName);
+        appN.setText(appName);
         scrollButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
-                speakToUser("Wish Button Clicked");
-                TextView textView = (TextView) overlay_wish.findViewById(R.id.textview);
-                textView.setText(R.string.add);
-            }
-        });
-
-    }
-
-
-    //<-------------------------------  helper  ---------------------------------------->
-
-    private void configureSwipeButton() {
-        Button swipeButton = (Button) overlay.findViewById(R.id.swipe);
-        swipeButton.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                speakToUser("Browsing Apps!");
-                Path swipePath = new Path();
-                swipePath.moveTo(1000, 1000);
-                swipePath.lineTo(100, 1000);
-                GestureDescription.Builder gestureBuilder = new GestureDescription.Builder();
-                gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, 0, 500));
-                dispatchGesture(gestureBuilder.build(), null, null);
+                if(once_permission){
+                    wm.removeView(overlay_permission);
+                    overlay_permission = null;
+                    once_permission = false;
+                }
             }
         });
     }
 
-    public static void dfs(AccessibilityNodeInfo nodeInfo, final int depth) {
+    //<--------------------- get all the node information or trigger an event ---------------------------------------->
+
+    public void dfs(AccessibilityNodeInfo nodeInfo, final int depth) {
 
         if (nodeInfo == null) return;
-
         String spacerString = "";
 
         for (int i = 0; i < depth; ++i) {
             spacerString += '-';
         }
-        //Log the info you care about here... I choce classname and view resource name, because they are simple, but interesting.
-        //Log.d("TAG", spacerString + nodeInfo.getClassName() + " " + nodeInfo.getViewIdResourceName());
-        if (nodeInfo.getClassName().toString().contains("android.widget.TextView")) {
-            if (nodeInfo.getText() != null) {
-                Log.d("logs", spacerString + nodeInfo.getText().toString());
-                if (nodeInfo.getText().toString().contains("PluralSight")) {
-                    AccessibilityNodeInfo nf = nodeInfo.getParent();
-                    Log.d("Popup parent", nf.getViewIdResourceName());
-                }
-            }
-//                for(int i=0;i<nodeInfo.getChildCount();i++){
-//                    if(nodeInfo.getChild(i)!=null && nodeInfo.getChild(i).getClassName()!=null){
-//                        if(nodeInfo.getChild(i).getClassName().toString().contains("android.widget.TextView")){
-//                            if(nodeInfo.getChild(i).getText()!=null){
-//
-//                            }
-//                            Log.d("second level",spacerString + nodeInfo);
-//                        }
-//                    }
-//                }
-        }
 
+        if (nodeInfo.getText() != null) {    // able to get permissions with this function
+            Log.d("logs", spacerString + nodeInfo.getText().toString() +
+                    "------" + nodeInfo.getClassName().toString() + "------" + nodeInfo.getPackageName().toString());
+            if(nodeInfo.getClassName().toString().contains("android.widget.TextView") && nodeInfo.getPackageName().toString().contains("com.android.vending")){
+                appName = nodeInfo.getText().toString();
+                Log.d("appName",appName);
+            }
+        }
 
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
             dfs(nodeInfo.getChild(i), depth + 1);

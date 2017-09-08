@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/appName"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="AppName" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+        <Button
+            android:id="@+id/device"
+            android:textAllCaps="false"
+            android:background="#FFFAF0"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Device &amp; app history" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+        <Button
+            android:id="@+id/identity"
+            android:textAllCaps="false"
+            android:background="#FFFAF0"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Phone" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+        <Button
+            android:id="@+id/Wifi"
+            android:textAllCaps="false"
+            android:background="#FFFAF0"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Photos/Media/Files" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+        <Button
+            android:id="@+id/callinfo"
+            android:textAllCaps="false"
+            android:background="#FFFAF0"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Device ID &amp; call information" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10sp"
+            android:id="@+id/imageView4" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+
+        <LinearLayout
+            android:id="@+id/task1"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:textSize="13dp"
+            android:background="#FFFAF0"
+            android:layout_centerInParent="true"
+            android:layout_height="90dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/intrusion_green"
+                />
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/secondaryuse_yellow1"
+                />
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/surveillence_yellow"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancel"
+                android:text="Cancel"
+                android:layout_width="190sp"
+                android:layout_height="match_parent" />
+            <Button
+                android:id="@+id/install"
+                android:text="Install"
+                android:layout_width="190sp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

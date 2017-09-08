@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/appName"
+                android:textAllCaps="false"
+                android:layout_width="324dp"
+                android:textSize="20dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="AppName"
+                android:layout_weight="0.85" />
+
+            <Button
+                android:id="@+id/removeOv"
+                android:text="R"
+                android:layout_width="50sp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/devicebox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"></CheckBox>
+
+            <TextView
+                android:id="@+id/device"
+                android:textAllCaps="false"
+                android:layout_width="257dp"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:text="Device &amp; app history"
+                android:layout_weight="110.04" />
+            <Button
+                android:id="@+id/devbutton"
+                android:layout_width="61dp"
+                android:layout_height="44dp"
+                android:background="@drawable/right"
+                android:layout_weight="13.16" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/identitybox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"></CheckBox>
+
+            <TextView
+                android:id="@+id/identity"
+                android:textAllCaps="false"
+                android:layout_width="257dp"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:text="Identity"
+                android:layout_weight="111.43" />
+            <Button
+                android:id="@+id/identitybutton"
+                android:layout_width="61dp"
+                android:layout_height="44dp"
+                android:background="@drawable/right"
+                android:layout_weight="18.37" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/wifibox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"></CheckBox>
+
+            <TextView
+                android:id="@+id/wifi"
+                android:textAllCaps="false"
+                android:layout_width="257dp"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:text="Wi-Fi connection info"
+                android:layout_weight="27.17" />
+
+            <Button
+                android:id="@+id/wifibutton"
+                android:layout_width="61dp"
+                android:layout_height="44dp"
+                android:background="@drawable/right"
+                android:layout_weight="4.99" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/callinfobox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"></CheckBox>
+
+            <TextView
+                android:id="@+id/callinfo"
+                android:textAllCaps="false"
+                android:layout_width="257dp"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:text="Device ID &amp; call information"
+                android:layout_weight="113.21" />
+            <Button
+                android:id="@+id/callinfobutton"
+                android:layout_width="61dp"
+                android:layout_height="44dp"
+                android:background="@drawable/right"
+                android:layout_weight="29.33" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/otherbox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"></CheckBox>
+
+            <TextView
+                android:id="@+id/other"
+                android:textAllCaps="false"
+                android:layout_width="257dp"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:text="Other"
+                android:layout_weight="111.33" />
+            <Button
+                android:id="@+id/otherbutton"
+                android:layout_width="61dp"
+                android:layout_height="44dp"
+                android:background="@drawable/right"
+                android:layout_weight="42.36" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="82dp"
+            android:layout_marginBottom="10sp"
+            android:id="@+id/imageView4" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+
+        <LinearLayout
+            android:id="@+id/task1"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:textSize="13dp"
+            android:background="#FFFAF0"
+            android:layout_centerInParent="true"
+            android:layout_height="90dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/auditory_green"
+            />
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/motor_red"
+                />
+            <ImageView
+                android:layout_height="match_parent"
+                android:layout_width="125sp"
+                android:src="@drawable/visual_yellow"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="190sp"
+                android:layout_height="wrap_content"
+                android:text="Cancel" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/black" />
+
+            <Button
+                android:id="@+id/install"
+                android:text="Install"
+                android:layout_width="190sp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+    </LinearLayout>
+</RelativeLayout>
